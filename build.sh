@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker build --tag 'docker-pulseaudio-example:latest' .
+docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) --tag 'docker-pulseaudio-example:latest' .

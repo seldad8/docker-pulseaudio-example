@@ -9,6 +9,8 @@ echo "Found and using ${DOCKER_IMAGE_ID}"
 USER_UID=$(id -u)
 
 docker run -t -i \
-  --volume=/run/user/${USER_UID}/pulse:/run/user/1000/pulse \
+  --volume=/run/user/${USER_UID}/pulse:/run/user/1000/pulse:Z \
+  --device /dev/snd \
+  --privileged=true \
   ${DOCKER_IMAGE_ID} \
   ${@}

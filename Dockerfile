@@ -1,21 +1,16 @@
-FROM ubuntu:16.04
-MAINTAINER Guy Taylor <thebigguy.co.uk@gmail.com>
+FROM centos:7
 
 ENV UNAME pacat
 
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install --yes pulseaudio-utils
+RUN yum install -y pulseaudio-utils sudo
+ARG UID=1000
+ARG GID=1000
 
-# Set up the user
-RUN export UNAME=$UNAME UID=1000 GID=1000 && \
-    mkdir -p "/home/${UNAME}" && \
-    echo "${UNAME}:x:${UID}:${GID}:${UNAME} User,,,:/home/${UNAME}:/bin/bash" >> /etc/passwd && \
-    echo "${UNAME}:x:${UID}:" >> /etc/group && \
-    mkdir -p /etc/sudoers.d && \
-    echo "${UNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${UNAME} && \
-    chmod 0440 /etc/sudoers.d/${UNAME} && \
-    chown ${UID}:${GID} -R /home/${UNAME} && \
-    gpasswd -a ${UNAME} audio
+RUN groupadd -g ${GID} $UNAME && \
+    useradd -d /home/$UNAME -g ${GID} -u ${UID} -m $UNAME && \
+    echo "$UNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    gpasswd -a $UNAME audio
+
 
 COPY pulse-client.conf /etc/pulse/client.conf
 
